@@ -1,4 +1,4 @@
-package com.dimadyuk.smackchat.ui.home
+package com.dimadyuk.smackchat.ui.login
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -7,11 +7,11 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import com.dimadyuk.smackchat.databinding.FragmentHomeBinding
+import com.dimadyuk.smackchat.databinding.FragmentLoginBinding
 
-class HomeFragment : Fragment() {
+class LoginFragment : Fragment() {
 
-    private var _binding: FragmentHomeBinding? = null
+    private var _binding: FragmentLoginBinding? = null
 
     // This property is only valid between onCreateView and
     // onDestroyView.
@@ -22,28 +22,29 @@ class HomeFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        val homeViewModel =
-            ViewModelProvider(this).get(HomeViewModel::class.java)
+        val loginViewModel =
+            ViewModelProvider(this).get(LoginViewModel::class.java)
 
-        _binding = FragmentHomeBinding.inflate(inflater, container, false)
+        _binding = FragmentLoginBinding.inflate(inflater, container, false)
         val root: View = binding.root
-
         setClickListeners()
-        setObservers(homeViewModel)
-
+        setObservers(loginViewModel)
 
         return root
     }
 
-    private fun setObservers(homeViewModel: HomeViewModel) {
-        val textView: TextView = binding.mainChanelName
-        homeViewModel.text.observe(viewLifecycleOwner) {
+    private fun setObservers(loginViewModel: LoginViewModel) {
+        val textView: TextView = binding.loginDontHaveAccountText
+        loginViewModel.text.observe(viewLifecycleOwner) {
             textView.text = it
         }
     }
 
     private fun setClickListeners() {
-        binding.sendMessageButton.setOnClickListener {
+        binding.loginLoginButton.setOnClickListener {
+            // Handle the click event
+        }
+        binding.loginCreateUserButton.setOnClickListener {
             // Handle the click event
         }
     }
