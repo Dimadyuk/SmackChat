@@ -7,6 +7,8 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.fragment.findNavController
+import com.dimadyuk.smackchat.R
 import com.dimadyuk.smackchat.databinding.FragmentLoginBinding
 
 class LoginFragment : Fragment() {
@@ -45,7 +47,8 @@ class LoginFragment : Fragment() {
             // Handle the click event
         }
         binding.loginCreateUserButton.setOnClickListener {
-            // Handle the click event
+            val navController = findNavController()
+            navController.navigate(R.id.nav_create_user)
         }
     }
 
