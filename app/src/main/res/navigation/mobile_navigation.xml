@@ -7,19 +7,19 @@
 
     <fragment
         android:id="@+id/nav_home"
-        android:name="com.dimadyuk.smackchat.ui.home.HomeFragment"
+        android:name="com.dimadyuk.smackchat.controller.home.HomeFragment"
         android:label="@string/menu_home"
         tools:layout="@layout/fragment_home" />
 
     <fragment
         android:id="@+id/nav_login"
-        android:name="com.dimadyuk.smackchat.ui.login.LoginFragment"
+        android:name="com.dimadyuk.smackchat.controller.login.LoginFragment"
         android:label="@string/menu_login"
         tools:layout="@layout/fragment_login" />
 
     <fragment
         android:id="@+id/nav_create_user"
-        android:name="com.dimadyuk.smackchat.ui.create_user.CreateUserFragment"
+        android:name="com.dimadyuk.smackchat.controller.create_user.CreateUserFragment"
         android:label="@string/menu_create_user"
         tools:layout="@layout/fragment_create_user" />
 </navigation>

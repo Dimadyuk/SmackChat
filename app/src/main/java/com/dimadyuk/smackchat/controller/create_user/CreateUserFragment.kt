@@ -1,4 +1,4 @@
-package com.dimadyuk.smackchat.ui.create_user
+package com.dimadyuk.smackchat.controller.create_user
 
 import android.graphics.Color
 import android.os.Bundle

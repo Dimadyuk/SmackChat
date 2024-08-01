@@ -1,4 +1,4 @@
-package com.dimadyuk.smackchat.ui.home
+package com.dimadyuk.smackchat.controller.home
 
 import android.os.Bundle
 import android.view.LayoutInflater
