@@ -3,7 +3,7 @@ package com.dimadyuk.smackchat.services
 import android.content.Context
 import android.util.Log
 import com.android.volley.Response
-import com.android.volley.toolbox.JsonObjectRequest
+import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
 import com.dimadyuk.smackchat.utilities.Constants.URL_REGISTER
 import org.json.JSONObject
@@ -16,18 +16,17 @@ object AuthService {
         password: String,
         complete: (Boolean) -> Unit
     ) {
-        val url = URL_REGISTER
         val jsonBody = JSONObject()
         jsonBody.put("email", email)
         jsonBody.put("password", password)
         val requestBody = jsonBody.toString()
 
         val registerRequest =
-            object : JsonObjectRequest(
+            object : StringRequest(
                 Method.POST,
-                url,
-                null,
+                URL_REGISTER,
                 Response.Listener { response ->
+                    Log.d("SUCCESS", "Register user: $response")
                     complete(true)
                 }, Response.ErrorListener { error ->
                     Log.d("ERROR", "Could not register user: $error")

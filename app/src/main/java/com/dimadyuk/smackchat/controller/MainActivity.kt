@@ -1,4 +1,4 @@
-package com.dimadyuk.smackchat
+package com.dimadyuk.smackchat.controller
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
@@ -8,6 +8,7 @@ import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
+import com.dimadyuk.smackchat.R
 import com.dimadyuk.smackchat.databinding.ActivityMainBinding
 import com.google.android.material.navigation.NavigationView
 

@@ -9,6 +9,7 @@ import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.dimadyuk.smackchat.databinding.FragmentCreateUserBinding
+import com.dimadyuk.smackchat.services.AuthService
 import java.util.Random
 
 class CreateUserFragment : Fragment() {
@@ -72,7 +73,7 @@ class CreateUserFragment : Fragment() {
                 avatarColor = "[$savedR, $savedG, $savedB, 1]"
             }
             createUserCreateUserButton.setOnClickListener {
-                // Handle the click event
+                createUser()
             }
         }
     }
@@ -80,5 +81,19 @@ class CreateUserFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+    private fun createUser() {
+        with(binding) {
+            AuthService.registerUser(
+                context = requireContext(),
+                email = createUserEmailText.text.toString(),
+                password = createUserPasswordText.text.toString(),
+                complete = { complete ->
+                    if (complete) {
+
+                    }
+                }
+            )
+        }
     }
 }
