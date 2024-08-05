@@ -84,16 +84,25 @@ class CreateUserFragment : Fragment() {
     }
     private fun createUser() {
         with(binding) {
+            val email = createUserEmailText.text.toString()
+            val password = createUserPasswordText.text.toString()
             AuthService.registerUser(
                 context = requireContext(),
-                email = createUserEmailText.text.toString(),
-                password = createUserPasswordText.text.toString(),
-                complete = { complete ->
-                    if (complete) {
+                email = email,
+                password = password
+            ) { registerSuccess ->
+                if (registerSuccess) {
+                    AuthService.loginUser(
+                        context = requireContext(),
+                        email = email,
+                        password = password
+                    ) { loginSuccess ->
+                        if (loginSuccess) {
 
+                        }
                     }
                 }
-            )
+            }
         }
     }
 }
