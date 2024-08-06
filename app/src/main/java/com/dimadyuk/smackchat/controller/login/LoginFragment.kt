@@ -1,11 +1,9 @@
 package com.dimadyuk.smackchat.controller.login
 
-import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.inputmethod.InputMethodManager
 import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
@@ -14,6 +12,7 @@ import androidx.navigation.fragment.findNavController
 import com.dimadyuk.smackchat.R
 import com.dimadyuk.smackchat.databinding.FragmentLoginBinding
 import com.dimadyuk.smackchat.services.AuthService
+import com.dimadyuk.smackchat.utilities.hideKeyboard
 
 class LoginFragment : Fragment() {
 
@@ -52,7 +51,7 @@ class LoginFragment : Fragment() {
             showProgressBar(true)
             val email = binding.loginEmailText.text.toString()
             val password = binding.loginPasswordText.text.toString()
-            hideKeyboard()
+            requireActivity().hideKeyboard()
             if (email.isEmpty() || password.isEmpty()) {
                 Toast.makeText(
                     context,
@@ -105,17 +104,6 @@ class LoginFragment : Fragment() {
             }
             loginCreateUserButton.isEnabled = !enable
             loginLoginButton.isEnabled = !enable
-        }
-    }
-
-    fun hideKeyboard() {
-        val inputManager = activity?.getSystemService(Context.INPUT_METHOD_SERVICE)
-                as InputMethodManager
-        if (inputManager.isAcceptingText) {
-            inputManager.hideSoftInputFromWindow(
-                requireView().windowToken,
-                0
-            )
         }
     }
 }

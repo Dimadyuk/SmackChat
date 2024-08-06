@@ -47,6 +47,7 @@ dependencies {
     implementation(libs.androidx.navigation.ui.ktx)
 
     implementation(libs.volley)
+    implementation(libs.socket)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

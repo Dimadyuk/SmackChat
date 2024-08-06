@@ -8,6 +8,7 @@ import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.dimadyuk.smackchat.databinding.FragmentHomeBinding
+import com.dimadyuk.smackchat.utilities.hideKeyboard
 
 class HomeFragment : Fragment() {
 
@@ -44,7 +45,7 @@ class HomeFragment : Fragment() {
 
     private fun setClickListeners() {
         binding.sendMessageButton.setOnClickListener {
-            // Handle the click event
+            requireActivity().hideKeyboard()
         }
     }
 

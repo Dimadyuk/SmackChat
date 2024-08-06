@@ -6,6 +6,9 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.graphics.Color
 import android.os.Bundle
+import android.widget.EditText
+import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
@@ -19,12 +22,16 @@ import com.dimadyuk.smackchat.databinding.ActivityMainBinding
 import com.dimadyuk.smackchat.services.AuthService
 import com.dimadyuk.smackchat.services.UserDataService
 import com.dimadyuk.smackchat.utilities.Constants.BROADCAST_USER_DATA_CHANGE
+import com.dimadyuk.smackchat.utilities.Constants.SOCKET_URL
+import com.dimadyuk.smackchat.utilities.hideKeyboard
 import com.google.android.material.navigation.NavigationView
+import io.socket.client.IO
 
 class MainActivity : AppCompatActivity() {
-
+    private val socket = IO.socket(SOCKET_URL)
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var binding: ActivityMainBinding
+
     private val userDataChangeReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
             with(binding.navDrawerHeaderInclude) {
@@ -58,7 +65,6 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         setSupportActionBar(binding.appBarMain.toolbar)
-
         val drawerLayout: DrawerLayout = binding.drawerLayout
         val navView: NavigationView = binding.navView
         val navController = findNavController(R.id.nav_host_fragment_content_main)
@@ -90,9 +96,58 @@ class MainActivity : AppCompatActivity() {
                 }
                 drawerLayout.close()
             }
+            addChanelButton.setOnClickListener {
+                if (AuthService.isLoggedIn) {
+                    val builder = AlertDialog.Builder(this@MainActivity)
+                    val dialogView = layoutInflater.inflate(R.layout.add_channel_dialog, null)
+
+                    builder.setView(dialogView)
+                        .setPositiveButton("Add") { dialog, which ->
+                            val nameTextField =
+                                dialogView.findViewById<EditText>(R.id.addChannelNameText)
+                            val descTextField =
+                                dialogView.findViewById<EditText>(R.id.addChannelDescriptionText)
+                            val channelName = nameTextField.text.toString()
+                            val channelDesc = descTextField.text.toString()
+                            if (channelName.isNotEmpty() && channelDesc.isNotEmpty()) {
+                                socket.emit("newChannel", channelName, channelDesc)
+                            } else {
+                                Toast.makeText(
+                                    this@MainActivity,
+                                    "Please fill in both fields",
+                                    Toast.LENGTH_LONG
+                                ).show()
+                            }
+
+                        }
+                        .setNegativeButton("Cancel") { dialog, which -> hideKeyboard() }
+                        .show()
+                }
+                drawerLayout.close()
+            }
         }
     }
 
+    override fun onResume() {
+        LocalBroadcastManager.getInstance(this)
+            .registerReceiver(
+                userDataChangeReceiver,
+                IntentFilter(BROADCAST_USER_DATA_CHANGE)
+            )
+        socket.connect()
+        super.onResume()
+    }
+
+    override fun onPause() {
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(userDataChangeReceiver)
+        super.onPause()
+
+    }
+
+    override fun onDestroy() {
+        socket.disconnect()
+        super.onDestroy()
+    }
     override fun onSupportNavigateUp(): Boolean {
         val navController = findNavController(R.id.nav_host_fragment_content_main)
         return navController.navigateUp(appBarConfiguration) || super.onSupportNavigateUp()

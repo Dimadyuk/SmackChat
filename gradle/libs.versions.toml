@@ -13,6 +13,7 @@ lifecycleViewmodelKtx = "2.8.4"
 navigationFragmentKtx = "2.7.7"
 navigationUiKtx = "2.7.7"
 volley = "1.2.1"
+socket = "1.0.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -27,6 +28,7 @@ androidx-lifecycle-viewmodel-ktx = { group = "androidx.lifecycle", name = "lifec
 androidx-navigation-fragment-ktx = { group = "androidx.navigation", name = "navigation-fragment-ktx", version.ref = "navigationFragmentKtx" }
 androidx-navigation-ui-ktx = { group = "androidx.navigation", name = "navigation-ui-ktx", version.ref = "navigationUiKtx" }
 volley = { group = "com.android.volley", name = "volley", version.ref = "volley" }
+socket = { group = "io.socket", name = "socket.io-client", version.ref = "socket" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
