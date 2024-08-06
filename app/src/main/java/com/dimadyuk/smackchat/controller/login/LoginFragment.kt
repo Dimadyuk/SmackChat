@@ -10,6 +10,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.dimadyuk.smackchat.R
 import com.dimadyuk.smackchat.databinding.FragmentLoginBinding
+import com.dimadyuk.smackchat.services.AuthService
 
 class LoginFragment : Fragment() {
 
@@ -44,7 +45,18 @@ class LoginFragment : Fragment() {
 
     private fun setClickListeners() {
         binding.loginLoginButton.setOnClickListener {
-            // Handle the click event
+            val email = binding.loginEmailText.text.toString()
+            val password = binding.loginPasswordText.text.toString()
+            AuthService.loginUser(requireContext(), email, password) { loginSuccess ->
+                if (loginSuccess) {
+                    AuthService.findUserByEmail(requireContext()) { findSuccess ->
+                        if (findSuccess) {
+                            val navController = findNavController()
+                            navController.navigate(R.id.nav_home)
+                        }
+                    }
+                }
+            }
         }
         binding.loginCreateUserButton.setOnClickListener {
             val navController = findNavController()
