@@ -19,7 +19,9 @@ import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.dimadyuk.smackchat.R
 import com.dimadyuk.smackchat.databinding.ActivityMainBinding
+import com.dimadyuk.smackchat.model.Channel
 import com.dimadyuk.smackchat.services.AuthService
+import com.dimadyuk.smackchat.services.MessageService
 import com.dimadyuk.smackchat.services.UserDataService
 import com.dimadyuk.smackchat.utilities.Constants.BROADCAST_USER_DATA_CHANGE
 import com.dimadyuk.smackchat.utilities.Constants.SOCKET_URL
@@ -60,7 +62,15 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
+        socket.connect()
+        socket.on("channelCreated") { args ->
+            runOnUiThread {
+                val name = args[0] as String
+                val desc = args[1] as String
+                val id = args[2] as String
+                MessageService.channels.add(Channel(name, desc, id))
+            }
+        }
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
@@ -134,18 +144,12 @@ class MainActivity : AppCompatActivity() {
                 userDataChangeReceiver,
                 IntentFilter(BROADCAST_USER_DATA_CHANGE)
             )
-        socket.connect()
         super.onResume()
-    }
-
-    override fun onPause() {
-        LocalBroadcastManager.getInstance(this).unregisterReceiver(userDataChangeReceiver)
-        super.onPause()
-
     }
 
     override fun onDestroy() {
         socket.disconnect()
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(userDataChangeReceiver)
         super.onDestroy()
     }
     override fun onSupportNavigateUp(): Boolean {
