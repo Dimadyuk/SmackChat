@@ -6,6 +6,15 @@
     android:layout_height="match_parent"
     tools:context=".controller.login.LoginFragment">
 
+    <ProgressBar
+        android:id="@+id/loginProgressBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toTopOf="@+id/loginCreateUserButton"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+    </ProgressBar>
     <EditText
         android:id="@+id/loginEmailText"
         android:layout_width="0dp"

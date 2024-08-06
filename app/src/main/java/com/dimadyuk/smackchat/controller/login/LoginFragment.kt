@@ -1,10 +1,13 @@
 package com.dimadyuk.smackchat.controller.login
 
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
 import android.widget.TextView
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
@@ -30,6 +33,7 @@ class LoginFragment : Fragment() {
 
         _binding = FragmentLoginBinding.inflate(inflater, container, false)
         val root: View = binding.root
+        binding.loginProgressBar.visibility = View.INVISIBLE
         setClickListeners()
         setObservers(loginViewModel)
 
@@ -45,16 +49,31 @@ class LoginFragment : Fragment() {
 
     private fun setClickListeners() {
         binding.loginLoginButton.setOnClickListener {
+            showProgressBar(true)
             val email = binding.loginEmailText.text.toString()
             val password = binding.loginPasswordText.text.toString()
+            hideKeyboard()
+            if (email.isEmpty() || password.isEmpty()) {
+                Toast.makeText(
+                    context,
+                    "Please fill in both email and password",
+                    Toast.LENGTH_LONG
+                ).show()
+                return@setOnClickListener
+            }
             AuthService.loginUser(requireContext(), email, password) { loginSuccess ->
                 if (loginSuccess) {
                     AuthService.findUserByEmail(requireContext()) { findSuccess ->
                         if (findSuccess) {
                             val navController = findNavController()
                             navController.navigate(R.id.nav_home)
+                            showProgressBar(false)
+                        } else {
+                            errorToast()
                         }
                     }
+                } else {
+                    errorToast()
                 }
             }
         }
@@ -67,5 +86,36 @@ class LoginFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+    }
+    private fun errorToast() {
+        Toast.makeText(
+            context,
+            "Something went wrong, please try again",
+            Toast.LENGTH_LONG
+        ).show()
+        showProgressBar(false)
+    }
+
+    private fun showProgressBar(enable: Boolean) {
+        with(binding) {
+            if (enable) {
+                loginProgressBar.visibility = View.VISIBLE
+            } else {
+                loginProgressBar.visibility = View.INVISIBLE
+            }
+            loginCreateUserButton.isEnabled = !enable
+            loginLoginButton.isEnabled = !enable
+        }
+    }
+
+    fun hideKeyboard() {
+        val inputManager = activity?.getSystemService(Context.INPUT_METHOD_SERVICE)
+                as InputMethodManager
+        if (inputManager.isAcceptingText) {
+            inputManager.hideSoftInputFromWindow(
+                requireView().windowToken,
+                0
+            )
+        }
     }
 }
