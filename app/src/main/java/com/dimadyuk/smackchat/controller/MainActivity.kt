@@ -6,6 +6,7 @@ import android.content.Intent
 import android.content.IntentFilter
 import android.graphics.Color
 import android.os.Bundle
+import android.widget.ArrayAdapter
 import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
@@ -33,6 +34,7 @@ class MainActivity : AppCompatActivity() {
     private val socket = IO.socket(SOCKET_URL)
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var binding: ActivityMainBinding
+    private lateinit var channelAdapter: ArrayAdapter<Channel>
 
     private val userDataChangeReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
@@ -53,6 +55,11 @@ class MainActivity : AppCompatActivity() {
                             UserDataService.avatarColor
                         )
                     )
+                    MessageService.getChannels(this@MainActivity) { complete ->
+                        if (complete) {
+                            channelAdapter.notifyDataSetChanged()
+                        }
+                    }
                 } else {
                     loginButtonNavHeader.text = "Login"
                 }
@@ -60,6 +67,14 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun setupAdapters() {
+        channelAdapter = ArrayAdapter(
+            this,
+            android.R.layout.simple_list_item_1,
+            MessageService.channels
+        )
+        binding.channelList.adapter = channelAdapter
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         socket.connect()
@@ -69,6 +84,7 @@ class MainActivity : AppCompatActivity() {
                 val desc = args[1] as String
                 val id = args[2] as String
                 MessageService.channels.add(Channel(name, desc, id))
+                channelAdapter.notifyDataSetChanged()
             }
         }
         binding = ActivityMainBinding.inflate(layoutInflater)
@@ -87,6 +103,7 @@ class MainActivity : AppCompatActivity() {
         )
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
+        setupAdapters()
         LocalBroadcastManager.getInstance(this)
             .registerReceiver(
                 userDataChangeReceiver,
