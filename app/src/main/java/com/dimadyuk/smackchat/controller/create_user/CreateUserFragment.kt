@@ -11,6 +11,8 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
+import androidx.navigation.findNavController
+import com.dimadyuk.smackchat.R
 import com.dimadyuk.smackchat.databinding.FragmentCreateUserBinding
 import com.dimadyuk.smackchat.services.AuthService
 import com.dimadyuk.smackchat.utilities.Constants.BROADCAST_USER_DATA_CHANGE
@@ -88,6 +90,8 @@ class CreateUserFragment : Fragment() {
         _binding = null
     }
     private fun createUser() {
+        val navController = requireActivity()
+            .findNavController(R.id.nav_host_fragment_content_main)
         showProgressBar(true)
         with(binding) {
             val userName = createUserNameText.text.toString()
@@ -127,7 +131,7 @@ class CreateUserFragment : Fragment() {
                                     LocalBroadcastManager
                                         .getInstance(requireContext())
                                         .sendBroadcast(userDataChange)
-                                    parentFragmentManager.popBackStack()
+                                    navController.popBackStack(R.id.nav_home, false)
                                 } else {
                                     errorToast()
                                 }

@@ -1,8 +1,14 @@
 package com.dimadyuk.smackchat.controller
 
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
+import android.graphics.Color
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.drawerlayout.widget.DrawerLayout
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.navigateUp
@@ -10,12 +16,40 @@ import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.dimadyuk.smackchat.R
 import com.dimadyuk.smackchat.databinding.ActivityMainBinding
+import com.dimadyuk.smackchat.services.AuthService
+import com.dimadyuk.smackchat.services.UserDataService
+import com.dimadyuk.smackchat.utilities.Constants.BROADCAST_USER_DATA_CHANGE
 import com.google.android.material.navigation.NavigationView
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var binding: ActivityMainBinding
+    private val userDataChangeReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context?, intent: Intent?) {
+            with(binding.navDrawerHeaderInclude) {
+                if (AuthService.isLoggedIn) {
+                    loginButtonNavHeader.text = "Logout"
+                    userNameNavHeader.text = UserDataService.name
+                    userEmailNavHeader.text = UserDataService.email
+                    userImageNavHeader
+                        .setImageResource(
+                            resources.getIdentifier(
+                                UserDataService.avatarName,
+                                "drawable", packageName
+                            )
+                        )
+                    userImageNavHeader.setBackgroundColor(
+                        UserDataService.returnAvatarColor(
+                            UserDataService.avatarColor
+                        )
+                    )
+                } else {
+                    loginButtonNavHeader.text = "Login"
+                }
+            }
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,9 +71,25 @@ class MainActivity : AppCompatActivity() {
         )
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
-        binding.navDrawerHeaderInclude.loginButtonNavHeader.setOnClickListener {
-            navController.navigate(R.id.nav_login)
-            drawerLayout.close()
+        LocalBroadcastManager.getInstance(this)
+            .registerReceiver(
+                userDataChangeReceiver,
+                IntentFilter(BROADCAST_USER_DATA_CHANGE)
+            )
+        with(binding.navDrawerHeaderInclude) {
+            loginButtonNavHeader.setOnClickListener {
+                if (AuthService.isLoggedIn) {
+                    UserDataService.logout()
+                    loginButtonNavHeader.text = "Login"
+                    userNameNavHeader.text = "Login"
+                    userEmailNavHeader.text = ""
+                    userImageNavHeader.setImageResource(R.drawable.profiledefault)
+                    userImageNavHeader.setBackgroundColor(Color.TRANSPARENT)
+                } else {
+                    navController.navigate(R.id.nav_login)
+                }
+                drawerLayout.close()
+            }
         }
     }
 
