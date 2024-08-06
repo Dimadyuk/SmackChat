@@ -84,6 +84,7 @@ class CreateUserFragment : Fragment() {
     }
     private fun createUser() {
         with(binding) {
+            val userName = createUserNameText.text.toString()
             val email = createUserEmailText.text.toString()
             val password = createUserPasswordText.text.toString()
             AuthService.registerUser(
@@ -98,7 +99,17 @@ class CreateUserFragment : Fragment() {
                         password = password
                     ) { loginSuccess ->
                         if (loginSuccess) {
-
+                            AuthService.createUser(
+                                context = requireContext(),
+                                name = userName,
+                                email = email,
+                                avatarName = userAvatar,
+                                avatarColor = avatarColor
+                            ) { createSuccess ->
+                                if (createSuccess) {
+                                    parentFragmentManager.popBackStack()
+                                }
+                            }
                         }
                     }
                 }
