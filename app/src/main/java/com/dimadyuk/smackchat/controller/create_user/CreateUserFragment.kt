@@ -1,15 +1,19 @@
 package com.dimadyuk.smackchat.controller.create_user
 
+import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.localbroadcastmanager.content.LocalBroadcastManager
 import com.dimadyuk.smackchat.databinding.FragmentCreateUserBinding
 import com.dimadyuk.smackchat.services.AuthService
+import com.dimadyuk.smackchat.utilities.Constants.BROADCAST_USER_DATA_CHANGE
 import java.util.Random
 
 class CreateUserFragment : Fragment() {
@@ -31,6 +35,7 @@ class CreateUserFragment : Fragment() {
 
         _binding = FragmentCreateUserBinding.inflate(inflater, container, false)
         val root: View = binding.root
+        binding.createUserProgressBar.visibility = View.INVISIBLE
         setClickListeners()
         setObservers(createUserViewModel)
 
@@ -83,10 +88,20 @@ class CreateUserFragment : Fragment() {
         _binding = null
     }
     private fun createUser() {
+        showProgressBar(true)
         with(binding) {
             val userName = createUserNameText.text.toString()
             val email = createUserEmailText.text.toString()
             val password = createUserPasswordText.text.toString()
+            if (userName.isEmpty() || email.isEmpty() || password.isEmpty()) {
+                Toast.makeText(
+                    context,
+                    "Please fill in all fields",
+                    Toast.LENGTH_LONG
+                ).show()
+                showProgressBar(false)
+                return
+            }
             AuthService.registerUser(
                 context = requireContext(),
                 email = email,
@@ -106,14 +121,47 @@ class CreateUserFragment : Fragment() {
                                 avatarName = userAvatar,
                                 avatarColor = avatarColor
                             ) { createSuccess ->
+                                showProgressBar(false)
                                 if (createSuccess) {
+                                    val userDataChange = Intent(BROADCAST_USER_DATA_CHANGE)
+                                    LocalBroadcastManager
+                                        .getInstance(requireContext())
+                                        .sendBroadcast(userDataChange)
                                     parentFragmentManager.popBackStack()
+                                } else {
+                                    errorToast()
                                 }
                             }
+                        } else {
+                            errorToast()
                         }
                     }
+                } else {
+                    errorToast()
                 }
             }
+        }
+    }
+
+    private fun errorToast() {
+        Toast.makeText(
+            context,
+            "Something went wrong, please try again",
+            Toast.LENGTH_LONG
+        ).show()
+        showProgressBar(false)
+    }
+
+    private fun showProgressBar(enable: Boolean) {
+        with(binding) {
+            if (enable) {
+                createUserProgressBar.visibility = View.VISIBLE
+            } else {
+                createUserProgressBar.visibility = View.INVISIBLE
+            }
+            createUserCreateUserButton.isEnabled = !enable
+            createUserCreateAvatarImageView.isEnabled = !enable
+            createUserGenerateColorButton.isEnabled = !enable
         }
     }
 }
