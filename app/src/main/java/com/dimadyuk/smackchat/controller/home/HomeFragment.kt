@@ -6,16 +6,13 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
 import com.dimadyuk.smackchat.databinding.FragmentHomeBinding
+import com.dimadyuk.smackchat.services.MessageService
 import com.dimadyuk.smackchat.utilities.hideKeyboard
 
 class HomeFragment : Fragment() {
 
     private var _binding: FragmentHomeBinding? = null
-
-    // This property is only valid between onCreateView and
-    // onDestroyView.
     private val binding get() = _binding!!
 
     override fun onCreateView(
@@ -23,23 +20,21 @@ class HomeFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        val homeViewModel =
-            ViewModelProvider(this).get(HomeViewModel::class.java)
 
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
         setClickListeners()
-        setObservers(homeViewModel)
+        setObservers()
 
 
         return root
     }
 
-    private fun setObservers(homeViewModel: HomeViewModel) {
-        val textView: TextView = binding.mainChanelName
-        homeViewModel.text.observe(viewLifecycleOwner) {
-            textView.text = it
+    private fun setObservers() {
+        val textView: TextView = binding.chanelName
+        MessageService.selectedChannelLiveData.observe(viewLifecycleOwner) {
+            textView.text = it?.name
         }
     }
 

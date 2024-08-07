@@ -20,7 +20,6 @@ import org.json.JSONObject
 object AuthService {
 
     fun registerUser(
-        context: Context,
         email: String,
         password: String,
         complete: (Boolean) -> Unit
@@ -53,7 +52,6 @@ object AuthService {
     }
 
     fun loginUser(
-        context: Context,
         email: String,
         password: String,
         complete: (Boolean) -> Unit
@@ -95,7 +93,6 @@ object AuthService {
     }
 
     fun createUser(
-        context: Context,
         name: String,
         email: String,
         avatarName: String,
@@ -147,7 +144,10 @@ object AuthService {
         }
         App.prefs.requestQueue.add(createRequest)
     }
-    fun findUserByEmail(context: Context, complete: (Boolean) -> Unit) {
+    fun findUserByEmail(
+        context: Context,
+        complete: (Boolean) -> Unit
+    ) {
         val findUserRequest = object : JsonObjectRequest(
             Method.GET,
             URL_GET_USER + App.prefs.userEmail,

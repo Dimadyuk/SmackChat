@@ -8,7 +8,7 @@
     tools:context=".controller.home.HomeFragment">
 
     <TextView
-        android:id="@+id/mainChanelName"
+        android:id="@+id/chanelName"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
@@ -56,7 +56,7 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         app:layout_constraintBottom_toTopOf="@+id/messageForm"
-        app:layout_constraintTop_toBottomOf="@+id/mainChanelName">
+        app:layout_constraintTop_toBottomOf="@+id/chanelName">
 
     </androidx.recyclerview.widget.RecyclerView>
 </androidx.constraintlayout.widget.ConstraintLayout>

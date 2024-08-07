@@ -60,7 +60,7 @@ class LoginFragment : Fragment() {
                 ).show()
                 return@setOnClickListener
             }
-            AuthService.loginUser(requireContext(), email, password) { loginSuccess ->
+            AuthService.loginUser(email, password) { loginSuccess ->
                 if (loginSuccess) {
                     AuthService.findUserByEmail(requireContext()) { findSuccess ->
                         if (findSuccess) {

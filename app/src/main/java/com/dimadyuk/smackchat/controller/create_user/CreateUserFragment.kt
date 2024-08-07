@@ -107,19 +107,16 @@ class CreateUserFragment : Fragment() {
                 return
             }
             AuthService.registerUser(
-                context = requireContext(),
                 email = email,
                 password = password
             ) { registerSuccess ->
                 if (registerSuccess) {
                     AuthService.loginUser(
-                        context = requireContext(),
                         email = email,
                         password = password
                     ) { loginSuccess ->
                         if (loginSuccess) {
                             AuthService.createUser(
-                                context = requireContext(),
                                 name = userName,
                                 email = email,
                                 avatarName = userAvatar,

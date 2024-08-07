@@ -55,9 +55,12 @@ class MainActivity : AppCompatActivity() {
                             UserDataService.avatarColor
                         )
                     )
-                    MessageService.getChannels(this@MainActivity) { complete ->
+                    MessageService.getChannels { complete ->
                         if (complete) {
-                            channelAdapter.notifyDataSetChanged()
+                            if (MessageService.channels.isNotEmpty()) {
+                                MessageService.selectedChannel = MessageService.channels[0]
+                                channelAdapter.notifyDataSetChanged()
+                            }
                         }
                     }
                 } else {
@@ -74,6 +77,10 @@ class MainActivity : AppCompatActivity() {
             MessageService.channels
         )
         binding.channelList.adapter = channelAdapter
+        binding.channelList.setOnItemClickListener { parent, view, position, id ->
+            MessageService.selectedChannel = MessageService.channels[position]
+            binding.drawerLayout.close()
+        }
     }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

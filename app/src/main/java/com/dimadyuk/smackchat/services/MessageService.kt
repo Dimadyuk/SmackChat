@@ -1,7 +1,7 @@
 package com.dimadyuk.smackchat.services
 
-import android.content.Context
 import android.util.Log
+import androidx.lifecycle.MutableLiveData
 import com.android.volley.Response
 import com.android.volley.toolbox.JsonArrayRequest
 import com.dimadyuk.smackchat.controller.App
@@ -11,10 +11,14 @@ import org.json.JSONException
 
 object MessageService {
     val channels = ArrayList<Channel>()
-    fun getChannels(
-        context: Context,
-        complete: (Boolean) -> Unit
-    ) {
+    var selectedChannel: Channel? = null
+        set(value) {
+            field = value
+            selectedChannelLiveData.postValue(value)
+        }
+    val selectedChannelLiveData = MutableLiveData<Channel?>()
+
+    fun getChannels(complete: (Boolean) -> Unit) {
         val channelRequest = object : JsonArrayRequest(
             Method.GET,
             URL_GET_CHANNELS,
