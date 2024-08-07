@@ -1,6 +1,7 @@
 package com.dimadyuk.smackchat.adapters
 
 import android.content.Context
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,6 +11,11 @@ import androidx.recyclerview.widget.RecyclerView
 import com.dimadyuk.smackchat.R
 import com.dimadyuk.smackchat.model.Message
 import com.dimadyuk.smackchat.services.UserDataService
+import java.text.ParseException
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
+import java.util.TimeZone
 
 class MessageAdapter(val context: Context, val messages: ArrayList<Message>) :
     RecyclerView.Adapter<MessageAdapter.MessageViewHolder>() {
@@ -40,9 +46,22 @@ class MessageAdapter(val context: Context, val messages: ArrayList<Message>) :
             )
             userImage.setImageResource(resourcesId)
             userImage.setBackgroundColor(UserDataService.returnAvatarColor(message.userAvatarColor))
-            timeStamp.text = message.timeStamp
+            timeStamp.text = returnDateString(message.timeStamp)
             userName.text = message.userName
             messageBody.text = message.message
+        }
+
+        fun returnDateString(isoString: String): String {
+            val isoFormatter = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.getDefault())
+            isoFormatter.timeZone = TimeZone.getTimeZone("UTC")
+            var convertedDate = Date()
+            try {
+                convertedDate = isoFormatter.parse(isoString)
+            } catch (e: ParseException) {
+                Log.d("PARSE", "Cannot parse date")
+            }
+            val outDateString = SimpleDateFormat("E, h:mm a", Locale.getDefault())
+            return outDateString.format(convertedDate)
         }
     }
 }

@@ -123,6 +123,7 @@ object MessageService {
     }
 
     fun clearChannels() {
+        selectedChannel = null
         channels.clear()
     }
 }

@@ -46,7 +46,7 @@ class HomeFragment : Fragment() {
     private fun setObservers() {
         val textView: TextView = binding.chanelName
         MessageService.selectedChannelLiveData.observe(viewLifecycleOwner) {
-            textView.text = it?.name
+            textView.text = it?.name ?: "Please log In"
             it?.let {
                 MessageService.getMessages(it.id) { complete ->
                     if (complete) {

@@ -193,14 +193,6 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
-    override fun onResume() {
-        LocalBroadcastManager.getInstance(this)
-            .registerReceiver(
-                userDataChangeReceiver,
-                IntentFilter(BROADCAST_USER_DATA_CHANGE)
-            )
-        super.onResume()
-    }
 
     override fun onDestroy() {
         App.socket.disconnect()
