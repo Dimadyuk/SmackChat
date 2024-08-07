@@ -36,6 +36,16 @@ class HomeFragment : Fragment() {
         val textView: TextView = binding.chanelName
         MessageService.selectedChannelLiveData.observe(viewLifecycleOwner) {
             textView.text = it?.name
+            it?.let {
+                MessageService.getMessages(it.id) { complete ->
+                    if (complete) {
+//                        binding.messageListView.adapter = MessageAdapter(requireContext(), MessageService.messages)
+                        for (message in MessageService.messages) {
+                            println("Message: ${message.message}")
+                        }
+                    }
+                }
+            }
         }
     }
 

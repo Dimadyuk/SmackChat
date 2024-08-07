@@ -158,33 +158,39 @@ class MainActivity : AppCompatActivity() {
     }
 
     private val onNewChannel = Emitter.Listener { args ->
-        runOnUiThread {
-            val name = args[0] as String
-            val desc = args[1] as String
-            val id = args[2] as String
-            MessageService.channels.add(Channel(name, desc, id))
-            channelAdapter.notifyDataSetChanged()
+        if (App.prefs.isLoggedIn) {
+            runOnUiThread {
+                val name = args[0] as String
+                val desc = args[1] as String
+                val id = args[2] as String
+                MessageService.channels.add(Channel(name, desc, id))
+                channelAdapter.notifyDataSetChanged()
+            }
         }
     }
     private val onNewMessage = Emitter.Listener { args ->
-        runOnUiThread {
-            val msgBody = args[0] as String
-            val channelId = args[2] as String
-            val userName = args[3] as String
-            val userAvatar = args[4] as String
-            val userAvatarColor = args[5] as String
-            val id = args[6] as String
-            val timeStamp = args[7] as String
-            val newMessage = Message(
-                msgBody,
-                userName,
-                channelId,
-                userAvatar,
-                userAvatarColor,
-                id,
-                timeStamp
-            )
-            MessageService.messages.add(newMessage)
+        if (App.prefs.isLoggedIn) {
+            runOnUiThread {
+                val msgBody = args[0] as String
+                val channelId = args[2] as String
+                if (channelId == MessageService.selectedChannel?.id) {
+                    val userName = args[3] as String
+                    val userAvatar = args[4] as String
+                    val userAvatarColor = args[5] as String
+                    val id = args[6] as String
+                    val timeStamp = args[7] as String
+                    val newMessage = Message(
+                        msgBody,
+                        userName,
+                        channelId,
+                        userAvatar,
+                        userAvatarColor,
+                        id,
+                        timeStamp
+                    )
+                    MessageService.messages.add(newMessage)
+                }
+            }
         }
     }
     override fun onResume() {
