@@ -12,13 +12,18 @@ import org.json.JSONException
 
 object MessageService {
     val channels = ArrayList<Channel>()
-    val messages = ArrayList<Message>()
+    var messages = ArrayList<Message>()
+        set(value) {
+            field = value
+            messagesLiveData.postValue(value)
+        }
     var selectedChannel: Channel? = null
         set(value) {
             field = value
             selectedChannelLiveData.postValue(value)
         }
     val selectedChannelLiveData = MutableLiveData<Channel?>()
+    val messagesLiveData = MutableLiveData<ArrayList<Message>>()
 
     fun getChannels(complete: (Boolean) -> Unit) {
         val channelRequest = object : JsonArrayRequest(
