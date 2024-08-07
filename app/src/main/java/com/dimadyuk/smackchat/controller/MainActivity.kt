@@ -39,7 +39,7 @@ class MainActivity : AppCompatActivity() {
     private val userDataChangeReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
             with(binding.navDrawerHeaderInclude) {
-                if (AuthService.isLoggedIn) {
+                if (App.prefs.isLoggedIn) {
                     loginButtonNavHeader.text = "Logout"
                     userNameNavHeader.text = UserDataService.name
                     userEmailNavHeader.text = UserDataService.email
@@ -104,6 +104,9 @@ class MainActivity : AppCompatActivity() {
         setupActionBarWithNavController(navController, appBarConfiguration)
         navView.setupWithNavController(navController)
         setupAdapters()
+        if (App.prefs.isLoggedIn) {
+            AuthService.findUserByEmail(this) {}
+        }
         LocalBroadcastManager.getInstance(this)
             .registerReceiver(
                 userDataChangeReceiver,
@@ -111,7 +114,7 @@ class MainActivity : AppCompatActivity() {
             )
         with(binding.navDrawerHeaderInclude) {
             loginButtonNavHeader.setOnClickListener {
-                if (AuthService.isLoggedIn) {
+                if (App.prefs.isLoggedIn) {
                     UserDataService.logout()
                     loginButtonNavHeader.text = "Login"
                     userNameNavHeader.text = ""
@@ -124,7 +127,7 @@ class MainActivity : AppCompatActivity() {
                 drawerLayout.close()
             }
             addChanelButton.setOnClickListener {
-                if (AuthService.isLoggedIn) {
+                if (App.prefs.isLoggedIn) {
                     val builder = AlertDialog.Builder(this@MainActivity)
                     val dialogView = layoutInflater.inflate(R.layout.add_channel_dialog, null)
 
