@@ -6,8 +6,10 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.fragment.app.Fragment
+import com.dimadyuk.smackchat.controller.App
 import com.dimadyuk.smackchat.databinding.FragmentHomeBinding
 import com.dimadyuk.smackchat.services.MessageService
+import com.dimadyuk.smackchat.services.UserDataService
 import com.dimadyuk.smackchat.utilities.hideKeyboard
 
 class HomeFragment : Fragment() {
@@ -27,7 +29,6 @@ class HomeFragment : Fragment() {
         setClickListeners()
         setObservers()
 
-
         return root
     }
 
@@ -40,6 +41,23 @@ class HomeFragment : Fragment() {
 
     private fun setClickListeners() {
         binding.sendMessageButton.setOnClickListener {
+            if (App.prefs.isLoggedIn && MessageService.selectedChannel
+                != null
+                && binding.messageText.text?.isNotEmpty() == true
+            ) {
+                val userId = UserDataService.id
+                val channelId = MessageService.selectedChannel!!.id
+                App.socket.emit(
+                    "newMessage",
+                    binding.messageText.text.toString(),
+                    userId,
+                    channelId,
+                    UserDataService.name,
+                    UserDataService.avatarName,
+                    UserDataService.avatarColor,
+                )
+                binding.messageText.text?.clear()
+            }
             requireActivity().hideKeyboard()
         }
     }

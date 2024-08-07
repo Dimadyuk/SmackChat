@@ -21,17 +21,16 @@ import androidx.navigation.ui.setupWithNavController
 import com.dimadyuk.smackchat.R
 import com.dimadyuk.smackchat.databinding.ActivityMainBinding
 import com.dimadyuk.smackchat.model.Channel
+import com.dimadyuk.smackchat.model.Message
 import com.dimadyuk.smackchat.services.AuthService
 import com.dimadyuk.smackchat.services.MessageService
 import com.dimadyuk.smackchat.services.UserDataService
 import com.dimadyuk.smackchat.utilities.Constants.BROADCAST_USER_DATA_CHANGE
-import com.dimadyuk.smackchat.utilities.Constants.SOCKET_URL
 import com.dimadyuk.smackchat.utilities.hideKeyboard
 import com.google.android.material.navigation.NavigationView
-import io.socket.client.IO
+import io.socket.emitter.Emitter
 
 class MainActivity : AppCompatActivity() {
-    private val socket = IO.socket(SOCKET_URL)
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var binding: ActivityMainBinding
     private lateinit var channelAdapter: ArrayAdapter<Channel>
@@ -84,16 +83,9 @@ class MainActivity : AppCompatActivity() {
     }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        socket.connect()
-        socket.on("channelCreated") { args ->
-            runOnUiThread {
-                val name = args[0] as String
-                val desc = args[1] as String
-                val id = args[2] as String
-                MessageService.channels.add(Channel(name, desc, id))
-                channelAdapter.notifyDataSetChanged()
-            }
-        }
+        App.socket.connect()
+        App.socket.on("channelCreated", onNewChannel)
+        App.socket.on("messageCreated", onNewMessage)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
@@ -147,7 +139,7 @@ class MainActivity : AppCompatActivity() {
                             val channelName = nameTextField.text.toString()
                             val channelDesc = descTextField.text.toString()
                             if (channelName.isNotEmpty() && channelDesc.isNotEmpty()) {
-                                socket.emit("newChannel", channelName, channelDesc)
+                                App.socket.emit("newChannel", channelName, channelDesc)
                             } else {
                                 Toast.makeText(
                                     this@MainActivity,
@@ -165,6 +157,36 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private val onNewChannel = Emitter.Listener { args ->
+        runOnUiThread {
+            val name = args[0] as String
+            val desc = args[1] as String
+            val id = args[2] as String
+            MessageService.channels.add(Channel(name, desc, id))
+            channelAdapter.notifyDataSetChanged()
+        }
+    }
+    private val onNewMessage = Emitter.Listener { args ->
+        runOnUiThread {
+            val msgBody = args[0] as String
+            val channelId = args[2] as String
+            val userName = args[3] as String
+            val userAvatar = args[4] as String
+            val userAvatarColor = args[5] as String
+            val id = args[6] as String
+            val timeStamp = args[7] as String
+            val newMessage = Message(
+                msgBody,
+                userName,
+                channelId,
+                userAvatar,
+                userAvatarColor,
+                id,
+                timeStamp
+            )
+            MessageService.messages.add(newMessage)
+        }
+    }
     override fun onResume() {
         LocalBroadcastManager.getInstance(this)
             .registerReceiver(
@@ -175,7 +197,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     override fun onDestroy() {
-        socket.disconnect()
+        App.socket.disconnect()
         LocalBroadcastManager.getInstance(this).unregisterReceiver(userDataChangeReceiver)
         super.onDestroy()
     }

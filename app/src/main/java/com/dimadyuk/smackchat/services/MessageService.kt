@@ -6,11 +6,13 @@ import com.android.volley.Response
 import com.android.volley.toolbox.JsonArrayRequest
 import com.dimadyuk.smackchat.controller.App
 import com.dimadyuk.smackchat.model.Channel
+import com.dimadyuk.smackchat.model.Message
 import com.dimadyuk.smackchat.utilities.Constants.URL_GET_CHANNELS
 import org.json.JSONException
 
 object MessageService {
     val channels = ArrayList<Channel>()
+    val messages = ArrayList<Message>()
     var selectedChannel: Channel? = null
         set(value) {
             field = value

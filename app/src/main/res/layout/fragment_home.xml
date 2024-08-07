@@ -33,7 +33,7 @@
         app:layout_constraintStart_toStartOf="parent">
 
         <com.google.android.material.textfield.TextInputEditText
-            android:id="@+id/messageTextFiled"
+            android:id="@+id/messageText"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
